@@ -6,30 +6,27 @@ import * as actionCreators from '../actions/actionCreators'
 import { bindActionCreators } from 'redux'
 import TextField from 'material-ui/TextField';
 
-class AddExpense extends Component {
+class ExpenseEditor extends Component {
     constructor(props, context) {
         super(props, context)
-        this.state = {
-            name: "",
-            price: 0,
-            uuid: props.uuid
-        }
-
-        this.initialState = this.state;
     }
-    async onAddExpense(){
-        await this.props.actionCreators.addExpense(this.state)
+    async onAddExpense() {
+        try {
+            await this.props.actionCreators.addExpense(this.state)
+        }
+        catch (e) {
+        }
         this.setState(this.initialState)
     }
     render() {
-        const { dialogOpen } = this.props;
-        const { changeAddExpenseDialogState, addExpense } = this.props.actionCreators;
+        const { dialogOpen, expense } = this.props;
+        const { changeExpenseEditorState, addExpense } = this.props.actionCreators;
         const actions = [
             <RaisedButton
                 label="Close"
                 primary
                 style={styles.dialogButton}
-                onClick={() => changeAddExpenseDialogState(false)} />,
+                onClick={() => changeExpenseEditorState(false)} />,
             <RaisedButton
                 label="Save"
                 primary
@@ -43,14 +40,14 @@ class AddExpense extends Component {
                 open={dialogOpen}
                 modal={true}
                 onRequestClose={this.closeDialog}>
-                                    <TextField
-                        floatingLabelText="Name"
-                        value={this.state.name}
-                        onChange={(evt) => this.setState({name: evt.target.value})}/>
-                                            <TextField
-                        floatingLabelText="Price"
-                        value={this.state.price}
-                        onChange={(evt) => this.setState({price: evt.target.value})}/>
+                <TextField
+                    floatingLabelText="Name"
+                    value={expense.name}
+                    onChange={(evt) => this.setState({ name: evt.target.value })} />
+                <TextField
+                    floatingLabelText="Price"
+                    value={expense.price}
+                    onChange={(evt) => this.setState({ price: evt.target.value })} />
             </Dialog>
         )
     }
@@ -63,7 +60,7 @@ const styles = {
 }
 
 function mapStateToProps(state) {
-    return { dialogOpen: state.expenses.addExpenseDialogOpen, uuid: state.authorize.user.uuid }
+    return { dialogOpen: state.expenses.expenseEditorOpen, uuid: state.authorize.user.uuid }
 }
 
 function mapDispatchToProps(dispatch) {
@@ -72,4 +69,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddExpense)
+export default connect(mapStateToProps, mapDispatchToProps)(ExpenseEditor)
